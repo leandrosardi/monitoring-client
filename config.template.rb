@@ -19,9 +19,9 @@ SLOTS_QUOTA           = 5                            # capacity quota
 #  :tail_lines  -> how many lines to include when fetching recent context
 LOG_FILES = [
   {
-    name:       'application',
-    path:       '/var/log/myapp/app.log',
-    pattern:    nil,           # e.g. /ERROR|WARN/
+    name:       'postgresql',
+    path:       '/var/log/postgresql/postgresql-14-main.log',
+    pattern:    /ERROR|FATAL|PANIC|WARNING/i,
     tail_lines: 100
   },
   {
@@ -42,18 +42,9 @@ LOG_FILES = [
 #  :expect_count -> for custom processes, expected minimum number of matching processes
 SERVICES = [
   {
-    name:          'puma',
-    systemd_unit:  'puma.service'
+    name:          'postgresql',
+    systemd_unit:  'postgresql.service'
   },
-  {
-    name:          'redis',
-    systemd_unit:  'redis.service'
-  },
-  {
-    name:          'custom_worker',
-    cmd_check:     'pgrep -f worker-process-name', # exits 0 if found
-    expect_count:  1
-  }
   # add more services/daemons here
 ]
 
