@@ -18,19 +18,23 @@ SLOTS_QUOTA           = 5                            # capacity quota
 #  :pattern     -> (optional) regex to filter / highlight lines
 #  :tail_lines  -> how many lines to include when fetching recent context
 LOG_FILES = [
-  {
-    name:       'postgresql',
-    path:       '/var/log/postgresql/postgresql-14-main.log',
-    pattern:    /ERROR|FATAL|PANIC|WARNING/i,
-    tail_lines: 100
-  },
-  {
-    name:       'system',
-    path:       '/var/log/syslog',
-    pattern:    /error/i,
-    tail_lines: 50
-  }
-  # add more as needed
+    {
+        name:       'demo',
+        path:       '/home/leandro/demo.log',
+        pattern:    /ERROR|FATAL|PANIC|WARNING/i,
+        tail_lines: 100
+    }, {
+        name:       'postgresql',
+        path:       '/var/log/postgresql/postgresql-14-main.log',
+        pattern:    /ERROR|FATAL|PANIC|WARNING/i,
+        tail_lines: 100
+    }, {
+        name:       'system',
+        path:       '/var/log/syslog',
+        pattern:    /error/i,
+        tail_lines: 50
+    }
+    # add more as needed
 ]
 
 # === Services / daemons to monitor ===
@@ -41,11 +45,11 @@ LOG_FILES = [
 #  :cmd_check    -> alternative shell command that exits 0 when healthy
 #  :expect_count -> for custom processes, expected minimum number of matching processes
 SERVICES = [
-  {
-    name:          'postgresql',
-    systemd_unit:  'postgresql.service'
-  },
-  # add more services/daemons here
+    {
+        name:          'postgresql',
+        systemd_unit:  'postgresql.service'
+    },
+    # add more services/daemons here
 ]
 
 # === Polling / heartbeat interval (seconds) ===

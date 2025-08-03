@@ -40,6 +40,7 @@ client = MonitoringClient::Client.new(
   node_path:      MONITORING_NODE_PATH,
   micro_service:  defined?(MICRO_SERVICE_NAME) ? MICRO_SERVICE_NAME : 'unknown',
   slots_quota:    defined?(SLOTS_QUOTA) ? SLOTS_QUOTA : 1,
+  log_files:      LOG_FILES,
   services:       SERVICES
 )
 
