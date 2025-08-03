@@ -1,147 +1,0 @@
-2025-08-03 10:55:27: [0;32;49mMoniotring Client is Starting![0m
-2025-08-03 10:59:09: [0;32;49mMoniotring Client is Starting![0m
-2025-08-03 10:59:09: Initializing... [0;32;49mdone[0m
-2025-08-03 10:59:25: [0;32;49mMoniotring Client is Starting![0m
-2025-08-03 10:59:25: Initializing... [0;32;49mdone[0m
-2025-08-03 11:00:46: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:00:46: Push data... [0;32;49mdone[0m
-2025-08-03 11:00:47: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:00:47: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:00:47: Calculating loop duration... done ([0;34;49m0.451800819[0m)
-2025-08-03 11:00:47: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:00:47: Sleeping for [0;34;49m9.548199181[0m seconds... [0;32;49mdone[0m
-2025-08-03 11:00:56: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:00:56: Push data... [0;32;49mdone[0m
-2025-08-03 11:00:57: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:00:57: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:00:57: Calculating loop duration... done ([0;34;49m0.462484701[0m)
-2025-08-03 11:00:57: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:00:57: Sleeping for [0;34;49m9.537515299[0m seconds... [0;32;49mdone[0m
-2025-08-03 11:01:06: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:01:06: Push data... [0;32;49mdone[0m
-2025-08-03 11:01:07: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:01:07: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:01:07: Calculating loop duration... done ([0;34;49m0.344325581[0m)
-2025-08-03 11:01:07: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:01:07: Sleeping for [0;34;49m9.655674419[0m seconds... [0;32;49mdone[0m
-2025-08-03 11:01:16: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:01:16: Push data... [0;32;49mdone[0m
-2025-08-03 11:01:17: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:01:17: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:01:17: Calculating loop duration... done ([0;34;49m0.392539338[0m)
-2025-08-03 11:01:17: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:01:17: Sleeping for [0;34;49m9.607460662[0m seconds... 2025-08-03 11:14:46: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:14:46: Push data... [0;32;49mdone[0m
-2025-08-03 11:14:46: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:14:46: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:14:46: Calculating loop duration... done ([0;34;49m0.429973437[0m)
-2025-08-03 11:14:46: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:14:46: Sleeping for [0;34;49m9.570026563[0m seconds... 2025-08-03 11:15:59: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:15:59: Push data... [0;32;49mdone[0m
-2025-08-03 11:15:59: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:15:59: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:15:59: Calculating loop duration... done ([0;34;49m0.389051388[0m)
-2025-08-03 11:15:59: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:15:59: Sleeping for [0;34;49m9.610948612[0m seconds... 2025-08-03 11:17:24: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:17:24: Push data... [0;32;49mdone[0m
-2025-08-03 11:17:24: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:17:24: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:17:24: Calculating loop duration... done ([0;34;49m0.368096737[0m)
-2025-08-03 11:17:24: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:17:24: Sleeping for [0;34;49m9.631903263[0m seconds... 2025-08-03 11:21:00: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:21:00: Push data... [0;32;49mdone[0m
-2025-08-03 11:21:01: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:21:01: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:21:01: Calculating loop duration... done ([0;34;49m0.525388501[0m)
-2025-08-03 11:21:01: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:21:01: Sleeping for [0;34;49m9.474611499[0m seconds... 2025-08-03 11:21:36: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:21:36: Push data... [0;32;49mdone[0m
-2025-08-03 11:21:37: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:21:38: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:21:38: Calculating loop duration... done ([0;34;49m1.638588221[0m)
-2025-08-03 11:21:38: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:21:38: Sleeping for [0;34;49m8.361411779[0m seconds... 2025-08-03 11:23:34: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:23:34: Push data... [0;32;49mdone[0m
-2025-08-03 11:23:36: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:23:36: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:23:36: Calculating loop duration... done ([0;34;49m1.792287435[0m)
-2025-08-03 11:23:36: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:23:36: Sleeping for [0;34;49m8.207712565[0m seconds... [0;32;49mdone[0m
-2025-08-03 11:23:44: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:23:44: Push data... [0;32;49mdone[0m
-2025-08-03 11:23:44: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:23:44: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:23:44: Calculating loop duration... done ([0;34;49m0.340903639[0m)
-2025-08-03 11:23:44: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:23:44: Sleeping for [0;34;49m9.659096361[0m seconds... 2025-08-03 11:33:41: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:33:41: Push data... [0;32;49mdone[0m
-2025-08-03 11:33:41: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:33:41: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:33:41: Calculating loop duration... done ([0;34;49m0.593738093[0m)
-2025-08-03 11:33:41: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:33:41: Sleeping for [0;34;49m9.406261907[0m seconds... [0;32;49mdone[0m
-2025-08-03 11:33:51: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:33:51: Push data... [0;32;49mdone[0m
-2025-08-03 11:33:51: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:33:51: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:33:51: Calculating loop duration... done ([0;34;49m0.362123698[0m)
-2025-08-03 11:33:51: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:33:51: Sleeping for [0;34;49m9.637876302[0m seconds... [0;32;49mdone[0m
-2025-08-03 11:34:01: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:34:01: Push data... [0;32;49mdone[0m
-2025-08-03 11:34:01: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:34:01: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:34:01: Calculating loop duration... done ([0;34;49m0.444396906[0m)
-2025-08-03 11:34:01: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:34:01: Sleeping for [0;34;49m9.555603094[0m seconds... [0;32;49mdone[0m
-2025-08-03 11:34:11: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:34:11: Push data... [0;32;49mdone[0m
-2025-08-03 11:34:11: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:34:11: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:34:11: Calculating loop duration... done ([0;34;49m0.342156515[0m)
-2025-08-03 11:34:11: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:34:11: Sleeping for [0;34;49m9.657843485[0m seconds... 2025-08-03 11:34:46: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:34:46: Push data... [0;32;49mdone[0m
-2025-08-03 11:34:46: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:34:46: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:34:46: Calculating loop duration... done ([0;34;49m0.338969603[0m)
-2025-08-03 11:34:46: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:34:46: Sleeping for [0;34;49m9.661030397[0m seconds... 2025-08-03 11:37:58: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:37:58: Push data... [0;32;49mdone[0m
-2025-08-03 11:37:58: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:37:58: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:37:58: Calculating loop duration... done ([0;34;49m0.349866156[0m)
-2025-08-03 11:37:58: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:37:58: Sleeping for [0;34;49m9.650133844[0m seconds... 2025-08-03 11:38:44: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:38:44: Push data... 2025-08-03 11:40:03: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:40:03: Push data... [0;32;49mdone[0m
-2025-08-03 11:40:03: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:40:03: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:40:03: Calculating loop duration... done ([0;34;49m0.60338772[0m)
-2025-08-03 11:40:03: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:40:03: Sleeping for [0;34;49m9.39661228[0m seconds... 2025-08-03 11:40:29: Starting loop... [0;32;49mdone[0m
-2025-08-03 11:40:29: Push data... [0;32;49mdone[0m
-2025-08-03 11:40:29: Releasing resources... [0;32;49mdone[0m
-2025-08-03 11:40:29: Ending loop... [0;32;49mdone[0m
-2025-08-03 11:40:29: Calculating loop duration... done ([0;34;49m0.51615993[0m)
-2025-08-03 11:40:29: [0;34;49mFinished Loop!
-[0m
-2025-08-03 11:40:29: Sleeping for [0;34;49m9.48384007[0m seconds... 
