@@ -4,6 +4,7 @@ require 'json'
 require 'time'
 require 'open3'
 require 'socket'  # if not already present (needed for provider_code if you use it)
+require 'fileutils'
 
 module MonitoringClient
   module SystemMetrics
@@ -76,17 +77,17 @@ module MonitoringClient
   end
 
   class Client
-    def initialize(base_url:, port:, api_key:, node_path:, micro_service:, slots_quota:, services: [])
+    def initialize(base_url:, port:, api_key:, node_path:, micro_service:, slots_quota:, services: [], log_files: [])
         @base_url      = base_url.chomp('/')
         @port          = port
         @api_key       = api_key
         @node_path     = node_path
         @micro_service = micro_service
         @slots_quota   = slots_quota
-        @services      = services                # array of systemd unit names, e.g. ['postgresql.service']
+        @services      = services                # array of systemd unit names
+        @log_files     = log_files               # array of hashes: { name:, path:, pattern:, tail_lines: }
         @alert_path    = '/api2.0/node_alert/upsert.json'
     end
-
 
     def push_node_status
         metrics = gather_metrics
@@ -135,12 +136,27 @@ module MonitoringClient
             check_services.each do |svc|
                 upsert_service_alert(node_id, svc[:name], svc[:description], solved: svc[:active])
             end
+            process_logfiles(node_id)
         end
-
-
     end
 
     private
+
+    def normalized_services
+        @normalized_services ||= @services.map do |s|
+            if s.is_a?(String)
+                { name: s.sub(/\.service$/, ''), unit: s }
+            elsif s.is_a?(Hash)
+                unit = s[:systemd_unit] || s['systemd_unit'] || s[:unit] || s['unit']
+            next if unit.nil? || unit.to_s.strip.empty?
+                name = s[:name] || unit.to_s.sub(/\.service$/, '')
+                { name: name, unit: unit }
+            else
+                nil
+            end
+        end.compact
+    end
+
 
     def gather_metrics
         {
@@ -178,32 +194,27 @@ module MonitoringClient
     end
 
     def check_services
-        @services.map do |unit|
+        alerts = []
+        normalized_services.each do |svc|
+            unit = svc[:unit]
             active = service_active?(unit)
             if active
-                {
-                    name: unit,
-                    active: true,
-                    description: "Service '#{unit}' is active."
-                }
-            else
-                status_summary = capture_command("systemctl status #{unit} --no-pager 2>&1")
-                recent_logs    = capture_command("journalctl -u #{unit} -n 20 --no-pager 2>&1")
-                description = +"Service '#{unit}' is not active.\n"
-                description << "Status summary: #{extract_last_lines(status_summary, 5)}\n"
-                description << "Recent logs: #{extract_last_lines(recent_logs, 10)}"
-                {
-                    name: unit,
-                    active: false,
-                    description: description.strip
-                }
+                alerts << { name: svc[:name], unit: unit, active: true, description: "Service '#{unit}' is active." }
+                next
             end
+
+            status_summary = capture_command("systemctl status #{unit} --no-pager 2>&1")
+            recent_logs    = capture_command("journalctl -u #{unit} -n 20 --no-pager 2>&1")
+            description = +"Service '#{unit}' is not active.\n"
+            description << "Status summary: #{extract_last_lines(status_summary, 5)}\n"
+            description << "Recent logs: #{extract_last_lines(recent_logs, 10)}"
+            alerts << { name: svc[:name], unit: unit, active: false, description: description.strip }
         end
+        alerts
     end
 
-
     def service_active?(unit)
-falseservice_active
+        return false if unit.to_s.strip.empty?
         out, _ = Open3.capture2("systemctl is-active #{unit}")
         out.strip == 'active'
     rescue
@@ -239,7 +250,112 @@ falseservice_active
         post_json(alert_url, payload)
     end
 
+    def upsert_log_alert(node_id, log_name, description, solved:)
+        payload = {
+            api_key:        @api_key,
+            id_node:        node_id,
+            type:           "LOG_ISSUE:#{log_name}",
+            description:    description,
+            screenshot_url: nil,
+            solved:         solved
+        }
+        post_json(alert_url, payload)
+    end
 
+    def log_state_dir
+        dir = File.expand_path('~/.monitoring_client/log_state')
+        FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+        dir
+    end
+
+    def state_file_path(log_name)
+        File.join(log_state_dir, "#{sanitize_name(log_name)}.json")
+    end
+
+    def sanitize_name(name)
+        name.gsub(/[^a-zA-Z0-9_\-]/, '_')
+    end
+
+    def load_log_state(log_name)
+        path = state_file_path(log_name)
+        return {} unless File.exist?(path)
+        JSON.parse(File.read(path)) rescue {}
+    end
+
+    def save_log_state(log_name, state)
+        path = state_file_path(log_name)
+        File.write(path, JSON.pretty_generate(state))
+    end
+
+    def file_identity(path)
+        st = File.stat(path)
+        { ino: st.ino, dev: st.dev }
+    rescue
+        nil
+    end
+
+    def identity_changed?(old_id, new_id)
+        return true if old_id.nil? || new_id.nil?
+        old_id['ino'].to_i != new_id[:ino].to_i || old_id['dev'].to_i != new_id[:dev].to_i
+    end
+
+    def process_logfiles(node_id)
+        return unless @log_files.is_a?(Array)
+        @log_files.each do |lf|
+            name = lf[:name]
+            path = lf[:path]
+            pattern = lf[:pattern] || /(ERROR|FATAL|PANIC|WARNING)/i
+            tail_lines = lf[:tail_lines] || 100
+
+            state = load_log_state(name)
+            previous_identity = state['file_id']
+            previous_offset = state['offset'] || 0
+
+            if !File.exist?(path)
+                # file missing -> upsert missing alert
+                upsert_log_alert(node_id, name, "Logfile #{path} does not exist.", solved: false)
+                next
+            end
+
+            current_identity = file_identity(path)
+            reset = identity_changed?(previous_identity, current_identity)
+            offset = reset ? 0 : previous_offset.to_i
+
+            matches = []
+            begin
+                File.open(path, 'r') do |f|
+                    f.seek(offset, IO::SEEK_SET) if offset > 0
+                    f.each_line do |line|
+                        if line.match?(pattern)
+                            matches << line.chomp
+                        end
+                    end
+                    new_offset = f.pos
+                    # save state with updated identity and offset
+                    new_state = {
+                        'file_id' => { 'ino' => current_identity[:ino], 'dev' => current_identity[:dev] },
+                        'offset'  => new_offset
+                    }
+                    save_log_state(name, new_state)
+                end
+            rescue => e
+                upsert_log_alert(node_id, name, "Failed reading logfile #{path}: #{e.message}", solved: false)
+                next
+            end
+
+            # If the file was missing previously and now exists, mark previous missing alert as solved
+            if state['file_id'].nil? && File.exist?(path)
+                upsert_log_alert(node_id, name, "Logfile #{path} recovered.", solved: true)
+            end
+
+            # If matches found, report an alert (include last few)
+            unless matches.empty?
+                sample = matches.last([matches.size, tail_lines].min).join(" | ")
+                description = "Detected patterns in #{path}: #{sample}"
+                upsert_log_alert(node_id, name, description, solved: false)
+            end
+        end
+    end
 
   end
 end
