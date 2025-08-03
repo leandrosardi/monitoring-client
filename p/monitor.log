@@ -1,0 +1,37 @@
+2025-08-03 10:55:27: [0;32;49mMoniotring Client is Starting![0m
+2025-08-03 10:59:09: [0;32;49mMoniotring Client is Starting![0m
+2025-08-03 10:59:09: Initializing... [0;32;49mdone[0m
+2025-08-03 10:59:25: [0;32;49mMoniotring Client is Starting![0m
+2025-08-03 10:59:25: Initializing... [0;32;49mdone[0m
+2025-08-03 11:00:46: Starting loop... [0;32;49mdone[0m
+2025-08-03 11:00:46: Push data... [0;32;49mdone[0m
+2025-08-03 11:00:47: Releasing resources... [0;32;49mdone[0m
+2025-08-03 11:00:47: Ending loop... [0;32;49mdone[0m
+2025-08-03 11:00:47: Calculating loop duration... done ([0;34;49m0.451800819[0m)
+2025-08-03 11:00:47: [0;34;49mFinished Loop!
+[0m
+2025-08-03 11:00:47: Sleeping for [0;34;49m9.548199181[0m seconds... [0;32;49mdone[0m
+2025-08-03 11:00:56: Starting loop... [0;32;49mdone[0m
+2025-08-03 11:00:56: Push data... [0;32;49mdone[0m
+2025-08-03 11:00:57: Releasing resources... [0;32;49mdone[0m
+2025-08-03 11:00:57: Ending loop... [0;32;49mdone[0m
+2025-08-03 11:00:57: Calculating loop duration... done ([0;34;49m0.462484701[0m)
+2025-08-03 11:00:57: [0;34;49mFinished Loop!
+[0m
+2025-08-03 11:00:57: Sleeping for [0;34;49m9.537515299[0m seconds... [0;32;49mdone[0m
+2025-08-03 11:01:06: Starting loop... [0;32;49mdone[0m
+2025-08-03 11:01:06: Push data... [0;32;49mdone[0m
+2025-08-03 11:01:07: Releasing resources... [0;32;49mdone[0m
+2025-08-03 11:01:07: Ending loop... [0;32;49mdone[0m
+2025-08-03 11:01:07: Calculating loop duration... done ([0;34;49m0.344325581[0m)
+2025-08-03 11:01:07: [0;34;49mFinished Loop!
+[0m
+2025-08-03 11:01:07: Sleeping for [0;34;49m9.655674419[0m seconds... [0;32;49mdone[0m
+2025-08-03 11:01:16: Starting loop... [0;32;49mdone[0m
+2025-08-03 11:01:16: Push data... [0;32;49mdone[0m
+2025-08-03 11:01:17: Releasing resources... [0;32;49mdone[0m
+2025-08-03 11:01:17: Ending loop... [0;32;49mdone[0m
+2025-08-03 11:01:17: Calculating loop duration... done ([0;34;49m0.392539338[0m)
+2025-08-03 11:01:17: [0;34;49mFinished Loop!
+[0m
+2025-08-03 11:01:17: Sleeping for [0;34;49m9.607460662[0m seconds... 
