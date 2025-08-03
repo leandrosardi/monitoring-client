@@ -1,5 +1,8 @@
 # ignore actual config with secrets
 config.rb
 
+# ignore actual BlackOpsFile with secrets
+BlackOpsFile
+
 # ignore logs
 *.log
