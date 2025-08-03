@@ -2,6 +2,8 @@ require 'net/http'
 require 'uri'
 require 'json'
 require 'time'
+require 'open3'
+require 'socket'  # if not already present (needed for provider_code if you use it)
 
 module MonitoringClient
   module SystemMetrics
@@ -69,98 +71,175 @@ module MonitoringClient
     end
 
     def cpu_cores
-          File.read('/proc/cpuinfo').scan(/^processor\s*:/).size
+        File.read('/proc/cpuinfo').scan(/^processor\s*:/).size
     end
   end
 
   class Client
-    def initialize(base_url:, port:, api_key:, node_path:, micro_service:, slots_quota:)
+    def initialize(base_url:, port:, api_key:, node_path:, micro_service:, slots_quota:, services: [])
         @base_url      = base_url.chomp('/')
         @port          = port
         @api_key       = api_key
         @node_path     = node_path
         @micro_service = micro_service
         @slots_quota   = slots_quota
+        @services      = services                # array of systemd unit names, e.g. ['postgresql.service']
+        @alert_path    = '/api2.0/node_alert/upsert.json'
     end
 
-    def push_node_status
-      metrics = gather_metrics
-      body = {
-        api_key:                @api_key,
-        ssh_username:           nil,
-        ssh_password:           nil,
-        ssh_root_username:      nil,
-        ssh_root_password:      nil,
-        postgres_username:      nil,
-        postgres_password:      nil,
-        #provider_type:          'self-monitored',
-        #provider_code:          Socket.gethostname,
-        micro_service:          @micro_service,
-        slots_quota:            @slots_quota,
-        slots_used:             0,
-        total_ram_gb:           metrics[:total_ram_gb],
-        total_disk_gb:          metrics[:total_disk_gb],
-        current_ram_usage:      metrics[:current_ram_usage],
-        current_disk_usage:     metrics[:current_disk_usage],
-        current_cpu_usage:      metrics[:current_cpu_usage],
-        max_ram_usage:          90.0,
-        max_disk_usage:         90.0,
-        max_cpu_usage:          90.0,
-        creation_time:          nil,
-        creation_success:       nil,
-        creation_error_description: nil,
-        installation_time:           nil,
-        installation_success:        nil,
-        installation_error_description:nil,
-        migrations_time:             nil,
-        migrations_success:          nil,
-        migrations_error_description:nil,
-        last_start_time:             Time.now.iso8601,
-        last_start_success:          true,
-        last_start_description:      'heartbeat',
-        last_stop_time:              nil,
-        last_stop_success:          nil,
-        last_stop_description:       nil
-      }
 
-      post_json(request_url, body)
+    def push_node_status
+        metrics = gather_metrics
+        body = {
+            api_key:                @api_key,
+            ssh_username:           nil,
+            ssh_password:           nil,
+            ssh_root_username:      nil,
+            ssh_root_password:      nil,
+            postgres_username:      nil,
+            postgres_password:      nil,
+            #provider_type:          'self-monitored',
+            #provider_code:          Socket.gethostname,
+            micro_service:          @micro_service,
+            slots_quota:            @slots_quota,
+            slots_used:             0,
+            total_ram_gb:           metrics[:total_ram_gb],
+            total_disk_gb:          metrics[:total_disk_gb],
+            current_ram_usage:      metrics[:current_ram_usage],
+            current_disk_usage:     metrics[:current_disk_usage],
+            current_cpu_usage:      metrics[:current_cpu_usage],
+            max_ram_usage:          90.0,
+            max_disk_usage:         90.0,
+            max_cpu_usage:          90.0,
+            creation_time:          nil,
+            creation_success:       nil,
+            creation_error_description: nil,
+            installation_time:           nil,
+            installation_success:        nil,
+            installation_error_description:nil,
+            migrations_time:             nil,
+            migrations_success:          nil,
+            migrations_error_description:nil,
+            last_start_time:             Time.now.iso8601,
+            last_start_success:          true,
+            last_start_description:      'heartbeat',
+            last_stop_time:              nil,
+            last_stop_success:          nil,
+            last_stop_description:       nil
+        }
+
+        node_resp = post_json(request_url, body)
+        node_id = node_resp.dig(:body, 'node_id') || node_resp.dig(:body, 'id')
+
+        if node_id
+            check_services.each do |svc|
+                upsert_service_alert(node_id, svc[:name], svc[:description], solved: svc[:active])
+            end
+        end
+
+
     end
 
     private
 
     def gather_metrics
-      {
-        total_ram_gb:       SystemMetrics.total_ram_gb,
-        current_ram_usage:  SystemMetrics.current_ram_usage_percent,
-        current_cpu_usage:  SystemMetrics.current_cpu_usage_percent,
-        total_disk_gb:      SystemMetrics.total_disk_gb,
-        current_disk_usage: SystemMetrics.current_disk_usage_percent
-      }
+        {
+            total_ram_gb:       SystemMetrics.total_ram_gb,
+            current_ram_usage:  SystemMetrics.current_ram_usage_percent,
+            current_cpu_usage:  SystemMetrics.current_cpu_usage_percent,
+            total_disk_gb:      SystemMetrics.total_disk_gb,
+            current_disk_usage: SystemMetrics.current_disk_usage_percent
+        }
     end
 
     def request_url
-      "#{@base_url}:#{@port}#{@node_path}"
+        "#{@base_url}:#{@port}#{@node_path}"
     end
 
     def post_json(url, payload)
-      uri = URI(url)
-      req = Net::HTTP::Post.new(uri)
-      req['Content-Type'] = 'application/json'
-      req.body = payload.to_json
+        uri = URI(url)
+        req = Net::HTTP::Post.new(uri)
+        req['Content-Type'] = 'application/json'
+        req.body = payload.to_json
 
-      res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-        http.request(req)
-      end
+        res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+            http.request(req)
+        end
 
-      begin
-        resp_body = JSON.parse(res.body)
-      rescue
-        resp_body = { raw: res.body }
-      end
+        begin
+            resp_body = JSON.parse(res.body)
+        rescue
+            resp_body = { raw: res.body }
+        end
 
-      { code: res.code.to_i, body: resp_body }
+        { code: res.code.to_i, body: resp_body }
     rescue => e
-      { error: e.message }
+        { error: e.message }
     end
+
+    def check_services
+        @services.map do |unit|
+            active = service_active?(unit)
+            if active
+                {
+                    name: unit,
+                    active: true,
+                    description: "Service '#{unit}' is active."
+                }
+            else
+                status_summary = capture_command("systemctl status #{unit} --no-pager 2>&1")
+                recent_logs    = capture_command("journalctl -u #{unit} -n 20 --no-pager 2>&1")
+                description = +"Service '#{unit}' is not active.\n"
+                description << "Status summary: #{extract_last_lines(status_summary, 5)}\n"
+                description << "Recent logs: #{extract_last_lines(recent_logs, 10)}"
+                {
+                    name: unit,
+                    active: false,
+                    description: description.strip
+                }
+            end
+        end
+    end
+
+
+    def service_active?(unit)
+falseservice_active
+        out, _ = Open3.capture2("systemctl is-active #{unit}")
+        out.strip == 'active'
+    rescue
+        false
+    end
+
+    def capture_command(cmd)
+        out, _ = Open3.capture2e(cmd)
+        out.to_s
+    rescue => e
+        "Failed to run #{cmd}: #{e.message}"
+    end
+
+    def extract_last_lines(text, n)
+        return '' unless text
+        lines = text.lines.map(&:chomp)
+        lines.last(n).join(' | ')
+    end
+
+    def alert_url
+        "#{@base_url}:#{@port}#{@alert_path}"
+    end
+
+    def upsert_service_alert(node_id, service_name, description, solved:)
+        payload = {
+            api_key:        @api_key,
+            id_node:        node_id,
+            type:           "SERVICE_FAILED:#{service_name}",
+            description:    description,
+            screenshot_url: nil,
+            solved:         solved
+        }
+        post_json(alert_url, payload)
+    end
+
+
+
   end
 end

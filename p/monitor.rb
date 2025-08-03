@@ -6,6 +6,14 @@ require 'simple_cloud_logging'
 require 'simple_command_line_parser'
 require_relative '../lib/monitoring_client'
 
+# load config (must exist)
+begin
+  require_relative '../config'
+rescue LoadError
+  STDERR.puts "Missing config.rb. Copy config.rb.example to config.rb and fill values."
+  exit 1
+end
+
 # parse command line parameters
 parser = BlackStack::SimpleCommandLineParser.new(
     :description => 'This command will run automation of one specific profile.',
@@ -20,26 +28,19 @@ parser = BlackStack::SimpleCommandLineParser.new(
         :mandatory=>false,
         :description=>'Minimum delay between loops. A minimum of 10 seconds is recommended, in order to don\'t hard the database server. Default is 30 seconds.',
         :type=>BlackStack::SimpleCommandLineParser::INT,
-        :default=>10,
+        :default=>HEARTBEAT_INTERVAL,
     }]
 )
 
-# load config (must exist)
-begin
-  require_relative '../config'
-rescue LoadError
-  STDERR.puts "Missing config.rb. Copy config.rb.example to config.rb and fill values."
-  exit 1
-end
-
 # Build client
 client = MonitoringClient::Client.new(
-  base_url:      MONITORING_SAAS_URL,
-  port:          MONITORING_SAAS_PORT,
-  api_key:       MONITORING_API_KEY,
-  node_path:     MONITORING_NODE_PATH,
-  micro_service: defined?(MICRO_SERVICE_NAME) ? MICRO_SERVICE_NAME : 'unknown',
-  slots_quota:   defined?(SLOTS_QUOTA) ? SLOTS_QUOTA : 1
+  base_url:       MONITORING_SAAS_URL,
+  port:           MONITORING_SAAS_PORT,
+  api_key:        MONITORING_API_KEY,
+  node_path:      MONITORING_NODE_PATH,
+  micro_service:  defined?(MICRO_SERVICE_NAME) ? MICRO_SERVICE_NAME : 'unknown',
+  slots_quota:    defined?(SLOTS_QUOTA) ? SLOTS_QUOTA : 1,
+  services:       SERVICES
 )
 
 BlackStack::Pampa.run_stand_alone({
