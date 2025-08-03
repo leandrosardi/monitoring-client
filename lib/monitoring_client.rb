@@ -300,7 +300,6 @@ module MonitoringClient
     end
 
     def process_logfiles(node_id)
-#binding.pry
         return unless @log_files.is_a?(Array)
         @log_files.each do |lf|
             name = lf[:name]
