@@ -17,25 +17,7 @@ SLOTS_QUOTA           = 5                            # capacity quota
 #  :path        -> full path to the logfile
 #  :pattern     -> (optional) regex to filter / highlight lines
 #  :tail_lines  -> how many lines to include when fetching recent context
-LOG_FILES = !!monitoring_logfiles[
-    {
-        name:       'demo',
-        path:       '/home/leandro/demo.log',
-        pattern:    /ERROR|FATAL|PANIC|WARNING/i,
-        tail_lines: 100
-    }, {
-        name:       'postgresql',
-        path:       '/var/log/postgresql/postgresql-14-main.log',
-        pattern:    /ERROR|FATAL|PANIC|WARNING/i,
-        tail_lines: 100
-    }, {
-        name:       'system',
-        path:       '/var/log/syslog',
-        pattern:    /error/i,
-        tail_lines: 50
-    }
-    # add more as needed
-]
+LOG_FILES = !!monitoring_logfiles
 
 # === Services / daemons to monitor ===
 # Each entry can define a systemd unit or custom check.
@@ -44,13 +26,7 @@ LOG_FILES = !!monitoring_logfiles[
 #  :systemd_unit -> name of systemd service (preferred)
 #  :cmd_check    -> alternative shell command that exits 0 when healthy
 #  :expect_count -> for custom processes, expected minimum number of matching processes
-SERVICES = !!monitoring_services[
-    {
-        name:          'postgresql',
-        systemd_unit:  'postgresql.service'
-    },
-    # add more services/daemons here
-]
+SERVICES = !!monitoring_services
 
 # === Polling / heartbeat interval (seconds) ===
 HEARTBEAT_INTERVAL = 10
