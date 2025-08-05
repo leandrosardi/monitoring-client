@@ -182,15 +182,11 @@ module MonitoringClient
             http.request(req)
         end
 
-        begin
-            resp_body = JSON.parse(res.body)
-        rescue
-            resp_body = { raw: res.body }
-        end
+        resp_body = JSON.parse(res.body)
 
         { code: res.code.to_i, body: resp_body }
-    rescue => e
-        { error: e.message }
+    #rescue => e
+    #    { error: e.message }
     end
 
     def check_services

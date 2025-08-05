@@ -1,0 +1,71 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    blackstack-core (1.2.32)
+      content_spinning (~> 0.3.1)
+      faraday (~> 2.3.0)
+      json (~> 2.6.1)
+      pry (~> 0.14.1)
+    blackstack-db (1.0.9)
+      colorize (~> 0.8.1, >= 0.8.1)
+      sequel (~> 5.56.0, >= 5.56.0)
+      simple_cloud_logging (~> 1.2.2, >= 1.2.2)
+    blackstack-nodes (1.2.21)
+      net-ssh (~> 7.3.0)
+      simple_cloud_logging (~> 1.2.2)
+    bundler-unload (1.0.2)
+    coderay (1.1.3)
+    colorize (0.8.1)
+    content_spinning (0.3.1)
+    executable-hooks (1.7.1)
+    faraday (2.3.0)
+      faraday-net_http (~> 2.0)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (2.1.0)
+    json (2.6.3)
+    method_source (1.1.0)
+    mustermann (2.0.2)
+      ruby2_keywords (~> 0.0.1)
+    net-ssh (7.3.0)
+    pampa (2.1.5)
+      blackstack-core (~> 1.2.15)
+      blackstack-db (~> 1.0.1)
+      blackstack-nodes (~> 1.2.12)
+      colorize (~> 0.8.1)
+      rubygems-bundler (~> 1.4.5)
+      simple_cloud_logging (~> 1.2.7)
+      simple_command_line_parser (~> 1.1.2)
+      sinatra (~> 2.2.4)
+    pry (0.14.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    rack (2.2.17)
+    rack-protection (2.2.4)
+      rack
+    ruby2_keywords (0.0.5)
+    rubygems-bundler (1.4.5)
+      bundler-unload (>= 1.0.2)
+      executable-hooks (>= 1.5.0)
+    sequel (5.56.0)
+    simple_cloud_logging (1.2.7)
+      blackstack-core (~> 1.2.16, >= 1.2.16)
+      colorize (~> 0.8.1, >= 0.8.1)
+    simple_command_line_parser (1.1.2)
+    sinatra (2.2.4)
+      mustermann (~> 2.0)
+      rack (~> 2.2)
+      rack-protection (= 2.2.4)
+      tilt (~> 2.0)
+    tilt (2.6.1)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  json
+  pampa (~> 2.1.5)
+  simple_cloud_logging (~> 1.2.7)
+  simple_command_line_parser (~> 1.1.2)
+
+BUNDLED WITH
+   2.3.7
