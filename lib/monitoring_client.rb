@@ -307,61 +307,70 @@ module MonitoringClient
 
     def process_logfiles(node_id)
         return unless @log_files.is_a?(Array)
+
         @log_files.each do |lf|
-            name = lf[:name]
-            path = lf[:path]
-            pattern = lf[:pattern] || /(ERROR|FATAL|PANIC|WARNING)/i
+            base_name  = lf[:name]
+            pattern    = lf[:path]
             tail_lines = lf[:tail_lines] || 100
+            regex      = lf[:pattern] || /(ERROR|FATAL|PANIC|WARNING)/i
 
-            state = load_log_state(name)
-            previous_identity = state['file_id']
-            previous_offset = state['offset'] || 0
-
-            if !File.exist?(path)
-                # file missing -> upsert missing alert
-                upsert_log_alert(node_id, name, "Logfile #{path} does not exist.", solved: false)
+            paths = Dir.glob(pattern)
+            if paths.empty?
+                # no files matched at all → alert once on the pattern
+                upsert_log_alert(node_id, base_name,
+                    "No log files match pattern #{pattern}", solved: false)
                 next
             end
 
-            current_identity = file_identity(path)
-            reset = identity_changed?(previous_identity, current_identity)
-            offset = reset ? 0 : previous_offset.to_i
+            paths.each do |path|
+                name = "#{base_name}:#{File.basename(path)}"
+                state = load_log_state(name)
+                prev_id = state['file_id']
+                offset  = state['offset'] || 0
 
-            matches = []
-            begin
-                File.open(path, 'r') do |f|
-                    f.seek(offset, IO::SEEK_SET) if offset > 0
-                    f.each_line do |line|
-                        if line.match?(pattern)
-                            matches << line.chomp
-                        end
-                    end
-                    new_offset = f.pos
-                    # save state with updated identity and offset
-                    new_state = {
-                        'file_id' => { 'ino' => current_identity[:ino], 'dev' => current_identity[:dev] },
-                        'offset'  => new_offset
-                    }
-                    save_log_state(name, new_state)
+                if !File.exist?(path)
+                    upsert_log_alert(node_id, name, "Logfile #{path} disappeared.", solved: false)
+                    next
                 end
-            rescue => e
-                upsert_log_alert(node_id, name, "Failed reading logfile #{path}: #{e.message}", solved: false)
-                next
-            end
 
-            # If the file was missing previously and now exists, mark previous missing alert as solved
-            if state['file_id'].nil? && File.exist?(path)
-                upsert_log_alert(node_id, name, "Logfile #{path} recovered.", solved: true)
-            end
+                curr_id = file_identity(path)
+                reset   = identity_changed?(prev_id, curr_id)
+                offset  = reset ? 0 : offset.to_i
 
-            # If matches found, report an alert (include last few)
-            unless matches.empty?
-                sample = matches.last([matches.size, tail_lines].min).join(" | ")
-                description = "Detected patterns in #{path}: #{sample}"
-                upsert_log_alert(node_id, name, description, solved: false)
+                matches = []
+                begin
+                    File.open(path, 'r') do |f|
+                        f.seek(offset, IO::SEEK_SET) if offset > 0
+                        f.each_line do |line|
+                            matches << line.chomp if line.match?(regex)
+                        end
+                        new_state = {
+                            'file_id' => { 'ino' => curr_id[:ino], 'dev' => curr_id[:dev] },
+                            'offset'  => f.pos
+                        }
+                        save_log_state(name, new_state)
+                    end
+                rescue => e
+                    upsert_log_alert(node_id, name,
+                    "Failed reading logfile #{path}: #{e.message}", solved: false)
+                    next
+                end
+
+                # recovered?
+                if state['file_id'].nil?
+                    upsert_log_alert(node_id, name, "Logfile #{path} recovered.", solved: true)
+                end
+
+                # new matches?
+                unless matches.empty?
+                    sample = matches.last([matches.size, tail_lines].min).join(" | ")
+                    upsert_log_alert(node_id, name,
+                    "Detected in #{path}: #{sample}", solved: false)
+                end
             end
         end
-    end
+    end # process_logfiles
+
 
   end
 end
