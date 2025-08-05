@@ -173,21 +173,31 @@ module MonitoringClient
     end
 
     def post_json(url, payload)
-        uri = URI(url)
+        uri = URI.parse(url)
         req = Net::HTTP::Post.new(uri)
         req['Content-Type'] = 'application/json'
         req.body = payload.to_json
 
-        res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-            http.request(req)
+        http = Net::HTTP.new(uri.host, uri.port)
+        # <<< add this line to enable SSL when your URL is https://
+        http.use_ssl = (uri.scheme == 'https')
+        # if your server uses a self-signed cert, you might also need:
+        # http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+        res = http.start do |h|
+            h.request(req)
         end
 
-        resp_body = JSON.parse(res.body)
+        # avoid crashing on non-JSON bodies
+        begin
+            resp_body = JSON.parse(res.body)
+        rescue JSON::ParserError
+            resp_body = { raw: res.body }
+        end
 
         { code: res.code.to_i, body: resp_body }
-    #rescue => e
-    #    { error: e.message }
     end
+
 
     def check_services
         alerts = []
