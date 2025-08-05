@@ -45,7 +45,7 @@ client = MonitoringClient::Client.new(
 )
 
 BlackStack::Pampa.run_stand_alone({
-    :log_filename => 'monitor.log',
+    :log_filename => 'monitor.log', 
     :delay => parser.value('delay'),
     :run_once => parser.value('run-once'),
     :function => Proc.new do |l, *args|
