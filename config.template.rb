@@ -9,7 +9,7 @@ MONITORING_NODE_PATH  = '/api2.0/node/track.json'           # endpoint to receiv
 
 # === Node metadata ===
 MICRO_SERVICE_NAME    = '!!monitoring_micro_service_name'   # descriptive label for this node
-SLOTS_QUOTA           = 5                                   # capacity quota
+SLOTS_QUOTA           = !!monitoring_micro_service_slots    # capacity quota
 
 # === Logfiles to monitor ===
 # Each entry is a hash with:
