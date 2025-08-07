@@ -159,6 +159,7 @@ module MonitoringClient
                 upsert_service_alert(node_id, svc[:name], svc[:description], solved: svc[:active])
             end
             process_logfiles(node_id)
+            check_websites(node_id)
         end
     end
 
@@ -393,6 +394,104 @@ module MonitoringClient
         end
     end # process_logfiles
 
+    # helper to follow up to 3 redirects
+    def head_and_follow(uri, limit = 3)
+        raise "Too many redirects" if limit.zero?
+        res = Net::HTTP.start(uri.host, uri.port,
+                            use_ssl: uri.scheme == 'https',
+                            open_timeout: 5, read_timeout: 5) do |http|
+        http.head(uri.request_uri)
+        end
+        case res
+        when Net::HTTPRedirection
+        head_and_follow(URI(res['location']), limit - 1)
+        else
+        res
+        end
+    end
 
-  end
+    # helper to grab SSL cert
+    def fetch_ssl_cert(host, port)
+        tcp = TCPSocket.new(host, port)
+        ssl = OpenSSL::SSL::SSLSocket.new(tcp)
+        ssl.hostname = host
+        ssl.connect
+        cert = ssl.peer_cert
+        ssl.sysclose; tcp.close
+        cert
+    end
+
+    # full replacement for your check_websites
+    def check_websites(node_id)
+        Array(WEBSITES).each do |w|
+        name       = w[:name]
+        proto      = w[:protocol]
+        host       = w[:host]
+        port       = w[:port]
+        path       = w[:path]           || '/'
+        # pick per-site thresholds or fall back to global
+        thresholds = w[:ssl_thresholds] || SSL_EXPIRY_THRESHOLDS
+
+        url = "#{proto}://#{host}:#{port}#{path}"
+        uri = URI.parse(url)
+
+        # 1) HTTP(S) reachability
+        begin
+            res = head_and_follow(uri)
+            ok  = res.code.to_i.between?(200,399)
+            msg = "HTTP #{res.code}"
+        rescue => e
+            ok  = false
+            msg = e.message
+        end
+
+        upsert_log_alert(
+            node_id,
+            name,
+            ok ? "Website #{url} reachable (#{msg})"
+            : "Website #{url} unreachable: #{msg}",
+            solved: ok
+        )
+
+        # 2) SSL expiration check (HTTPS only)
+        next unless proto == 'https'
+        begin
+            cert      = fetch_ssl_cert(host, port)
+            days_left = ((cert.not_after - Time.now) / 86_400).to_i
+
+            level = if days_left < thresholds[:critical]
+                    :critical
+                    elsif days_left < thresholds[:warning]
+                    :warning
+                    elsif days_left < thresholds[:notice]
+                    :notice
+                    end
+
+            if level
+            upsert_log_alert(
+                node_id,
+                "#{name}-ssl",
+                "SSL for #{url} expires in #{days_left} days (#{cert.not_after.strftime('%Y-%m-%d')})",
+                solved: false
+            )
+            else
+            upsert_log_alert(
+                node_id,
+                "#{name}-ssl",
+                "SSL for #{url} healthy (#{days_left} days left)",
+                solved: true
+            )
+            end
+        rescue => e
+            upsert_log_alert(
+            node_id,
+            "#{name}-ssl",
+            "SSL check failed for #{url}: #{e.message}",
+            solved: false
+            )
+        end
+        end
+    end
+
+end
 end

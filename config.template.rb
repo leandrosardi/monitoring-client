@@ -28,6 +28,21 @@ LOG_FILES = !!monitoring_logfiles
 #  :expect_count -> for custom processes, expected minimum number of matching processes
 SERVICES = !!monitoring_services
 
+# === Websites to monitor ===
+# Each entry:
+#   :name             -> logical label
+#   :protocol         -> "http" or "https"
+#   :host             -> domain or IP
+#   :port             -> port number
+#   :path             -> URL path to check (default "/")
+#   :check_ssl_expiry -> only for https, whether to warn on expiring certs
+WEBSITES = !!monitoring_websites
+
+# === SSL expiry thresholds (in days) ===
+# If check_ssl_expiry is true, generate alerts when the cert expires within
+# any of these windows.
+SSL_EXPIRY_THRESHOLDS = !!monitoring_ssl_rules
+
 # === Polling / heartbeat interval (seconds) ===
 HEARTBEAT_INTERVAL = 10
 
