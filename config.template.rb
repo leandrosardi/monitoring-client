@@ -8,8 +8,8 @@ MONITORING_API_KEY    = '!!monitoring_saas_su_api_key'      # super-user API key
 MONITORING_NODE_PATH  = '/api2.0/node/track.json'           # endpoint to receive node heartbeats
 
 # === Node metadata ===
-MICRO_SERVICE_NAME    = 'worker-rpa'                 # descriptive label for this node
-SLOTS_QUOTA           = 5                            # capacity quota
+MICRO_SERVICE_NAME    = '!!monitoring_micro_service_name'   # descriptive label for this node
+SLOTS_QUOTA           = 5                                   # capacity quota
 
 # === Logfiles to monitor ===
 # Each entry is a hash with:
