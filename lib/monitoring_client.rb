@@ -74,7 +74,28 @@ module MonitoringClient
     def cpu_cores
         File.read('/proc/cpuinfo').scan(/^processor\s*:/).size
     end
-  end
+
+    # Return something like "Ubuntu 22.04"
+    def os_version
+        if File.exist?('/etc/os-release')
+        info = {}
+        File.read('/etc/os-release').each_line do |line|
+            k, v = line.strip.split('=', 2)
+            info[k] = v.delete_prefix('"').delete_suffix('"') if k && v
+        end
+        name = info['NAME']
+        ver  = info['VERSION_ID']
+        [name, ver].compact.join(' ')
+        else
+        # fallback to lsb_release if available
+        `lsb_release -ds`.strip.delete_prefix('"').delete_suffix('"')
+        end
+    rescue
+        nil
+    end
+
+  end # module SystemMetrics
+
 
   class Client
     def initialize(base_url:, port:, api_key:, node_path:, micro_service:, slots_quota:, services: [], log_files: [])
@@ -103,6 +124,7 @@ module MonitoringClient
             #provider_code:          Socket.gethostname,
             micro_service:          @micro_service,
             slots_quota:            @slots_quota,
+            os_version:             SystemMetrics::os_version,
             slots_used:             0,
             total_ram_gb:           metrics[:total_ram_gb],
             total_disk_gb:          metrics[:total_disk_gb],
