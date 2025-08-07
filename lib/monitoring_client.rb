@@ -453,6 +453,39 @@ module MonitoringClient
             solved: ok
         )
 
+        # 1.1) Response-time check
+        if (resp_thr = w[:response_threshold])
+        begin
+            start = Time.now
+            head_and_follow(uri)  # re-use our redirect-following HEAD
+            elapsed_ms = ((Time.now - start) * 1000).to_i
+
+            if elapsed_ms > resp_thr
+            upsert_log_alert(
+                node_id,
+                "#{name}-response",
+                "Response time for #{url} is #{elapsed_ms}ms (threshold #{resp_thr}ms)",
+                solved: false
+            )
+            else
+            upsert_log_alert(
+                node_id,
+                "#{name}-response",
+                "Response time for #{url} is #{elapsed_ms}ms",
+                solved: true
+            )
+            end
+        rescue => e
+            upsert_log_alert(
+            node_id,
+            "#{name}-response",
+            "Response-time check failed for #{url}: #{e.message}",
+            solved: false
+            )
+        end
+        end
+
+
         # 2) SSL expiration check (HTTPS only)
         next unless proto == 'https'
         begin
