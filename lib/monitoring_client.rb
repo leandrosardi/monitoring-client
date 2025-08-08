@@ -94,6 +94,11 @@ module MonitoringClient
         nil
     end
 
+    # Return the hostname
+    def hostname
+        `hostname`
+    end
+
   end # module SystemMetrics
 
 
@@ -125,6 +130,7 @@ module MonitoringClient
             micro_service:          @micro_service,
             slots_quota:            @slots_quota,
             os_version:             SystemMetrics::os_version,
+            name:                   SystemMetrics::hostname,
             slots_used:             0,
             total_ram_gb:           metrics[:total_ram_gb],
             total_disk_gb:          metrics[:total_disk_gb],
