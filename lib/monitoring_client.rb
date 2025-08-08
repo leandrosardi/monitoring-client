@@ -96,7 +96,7 @@ module MonitoringClient
 
     # Return the hostname
     def hostname
-        `hostname`
+        `hostname`.strip
     end
 
   end # module SystemMetrics
