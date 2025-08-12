@@ -289,7 +289,7 @@ module MonitoringClient
         payload = {
             api_key:        @api_key,
             id_node:        node_id,
-            type:           "LOG_ISSUE:#{log_name}",
+            type:           "LOG_ISSUE",
             description:    description,
             screenshot_url: nil,
             solved:         solved
