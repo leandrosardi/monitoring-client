@@ -277,7 +277,7 @@ module MonitoringClient
         payload = {
             api_key:        @api_key,
             id_node:        node_id,
-            type:           "SERVICE_FAILED:#{service_name}",
+            type:           "SERVICE_FAILED",
             description:    description,
             screenshot_url: nil,
             solved:         solved
