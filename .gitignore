@@ -6,3 +6,6 @@ BlackOpsFile
 
 # ignore logs
 *.log
+
+# 
+Gemfile.lock
