@@ -9,3 +9,6 @@ BlackOpsFile
 
 # 
 Gemfile.lock
+
+.bundle
+vendor
